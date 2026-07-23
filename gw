@@ -1,6 +1,5 @@
 #!/bin/zsh
-
-#git wrapper for tensor-flow (Tensor Ltd company)
+# simple git wrapper for tensor-flow (Tensor Ltd company)
 
 USERNAME=`git config user.name`
 BRANCH=`git branch --show-current`
@@ -20,7 +19,6 @@ if [[ -z "$1" ]]; then
 fi
 
 # создаем ветки в соответствии с Tensor-flow
-
 # проверяем что находимся в rc-ветке
 if [[ $BRANCH != ${RC_BRANCH_SIGN}* ]]; then 
     echo 'incorrect parent branch'
@@ -52,5 +50,4 @@ fi
     
 RELEASE_VERSION=${BRANCH[4,10]}
 FULL_BRANCH_NAME=$RELEASE_VERSION/$BRANCH_TYPE/$USERNAME/$BRANCH_NAME
-echo $FULL_BRANCH_NAME
-#git switch -c ${FULL_BRANCH_NAME}
+git switch -c ${FULL_BRANCH_NAME}
