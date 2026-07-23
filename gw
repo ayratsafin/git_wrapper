@@ -1,0 +1,56 @@
+#!/bin/zsh
+
+#git wrapper for tensor-flow (Tensor Ltd company)
+
+USERNAME=`git config user.name`
+BRANCH=`git branch --show-current`
+RC_BRANCH_SIGN="rc"
+
+# без аргументов просто возвращаем в rc-ветку и/или обновляем её
+if [[ -z "$1" ]]; then
+    if [[ $BRANCH == ${RC_BRANCH_SIGN}* ]]; then
+        git pull
+        exit 0
+    fi
+
+    RC_VERSION=${BRANCH[1,7]}
+    RC_BRANCH_NAME=${RC_BRANCH_SIGN}-${RC_VERSION}
+    git switch ${RC_BRANCH_NAME} && git pull
+    exit 0
+fi
+
+# создаем ветки в соответствии с Tensor-flow
+
+# проверяем что находимся в rc-ветке
+if [[ $BRANCH != ${RC_BRANCH_SIGN}* ]]; then 
+    echo 'incorrect parent branch'
+    exit 1
+fi
+
+# по-умолчанию создаем bugfix ветку
+BRANCH_TYPE='bugfix'
+BRANCH_NAME=$2
+
+case $1 in
+    [b])
+        BRANCH_TYPE='bugfix'
+        ;;
+    [f])
+        BRANCH_TYPE='feature'
+        ;;
+    *)
+        BRANCH_NAME=$1
+esac
+
+# если есть уточнение типа ветки, проверяем чтобы было название
+if [[ "$1" == "b" || "$1" == "f" ]]; then
+    if [[ -z "$2" ]]; then
+        echo "branch name cannot be empty"
+        exit 1
+    fi
+fi
+    
+RELEASE_VERSION=${BRANCH[4,10]}
+FULL_BRANCH_NAME=$RELEASE_VERSION/$BRANCH_TYPE/$USERNAME/$BRANCH_NAME
+echo $FULL_BRANCH_NAME
+#git switch -c ${FULL_BRANCH_NAME}
